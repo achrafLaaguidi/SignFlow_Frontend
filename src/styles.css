@@ -1,3 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+/* 1. تطبيق الخط على Angular Material Table بالكامل */
+.mat-mdc-table, 
+.mat-mdc-header-cell, 
+.mat-mdc-cell, 
+.mat-mdc-paginator {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* 2. ضبط وزن الخط للـ Headers والـ Cells */
+.mat-mdc-header-cell {
+  font-weight: 700 !important;
+}
+
+.mat-mdc-cell {
+  font-weight: 500 !important;
+}

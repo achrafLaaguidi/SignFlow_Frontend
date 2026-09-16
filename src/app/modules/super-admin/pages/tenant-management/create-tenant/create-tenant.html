@@ -1,0 +1,154 @@
+<!-- Overlay -->
+<div class="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+  
+  <!-- Modal Box -->
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative border border-gray-100 max-h-[90vh] overflow-y-auto">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+      <h3 class="text-xl font-semibold text-gray-800">Add New Tenant</h3>
+      <button (click)="close()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
+    </div>
+
+    <!-- Alert Message (API Global Error) -->
+    <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-700 text-sm flex items-start gap-2">
+      <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div>
+        <p class="font-semibold">{{ errorMessage }}</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="tenantForm" (ngSubmit)="onSubmit()" class="mt-4 space-y-4">
+      
+      <!-- 1. Company Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Company Name</label>
+        <input 
+          type="text" 
+          formControlName="companyName" 
+          placeholder="e.g. Acme Corp"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          [class.border-red-500]="(tenantForm.get('companyName')?.touched && tenantForm.get('companyName')?.invalid) || apiErrors['companyName']"
+        />
+        <span *ngIf="tenantForm.get('companyName')?.touched && tenantForm.get('companyName')?.errors?.['required']" class="text-xs text-red-500 block mt-1">
+          Company name is required
+        </span>
+        <span *ngIf="apiErrors['companyName']" class="text-xs text-red-500 block mt-1">
+          {{ apiErrors['companyName'] }}
+        </span>
+      </div>
+
+      <!-- 2. DB Schema -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">DB Schema Name</label>
+        <input 
+          type="text" 
+          formControlName="dbSchema" 
+          placeholder="e.g. acme_corp"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          [class.border-red-500]="(tenantForm.get('dbSchema')?.touched && tenantForm.get('dbSchema')?.invalid) || apiErrors['dbSchema']"
+        />
+        
+        <!-- Validation Client -->
+        <ng-container *ngIf="tenantForm.get('dbSchema')?.touched && tenantForm.get('dbSchema')?.invalid">
+          <span *ngIf="tenantForm.get('dbSchema')?.errors?.['required']" class="text-xs text-red-500 block mt-1">
+            DB Schema is required
+          </span>
+          <span *ngIf="tenantForm.get('dbSchema')?.errors?.['pattern']" class="text-xs text-red-500 block mt-1">
+            Must contain only lowercase letters, numbers, and underscores
+          </span>
+        </ng-container>
+
+        <!-- Validation Server (API Error) -->
+        <span *ngIf="apiErrors['dbSchema']" class="text-xs text-red-500 block mt-1">
+          {{ apiErrors['dbSchema'] }}
+        </span>
+      </div>
+
+      <!-- 3. Admin Full Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Admin Full Name</label>
+        <input 
+          type="text" 
+          formControlName="adminFullName" 
+          placeholder="e.g. John Doe"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          [class.border-red-500]="(tenantForm.get('adminFullName')?.touched && tenantForm.get('adminFullName')?.invalid) || apiErrors['adminFullName']"
+        />
+        <span *ngIf="tenantForm.get('adminFullName')?.touched && tenantForm.get('adminFullName')?.errors?.['required']" class="text-xs text-red-500 block mt-1">
+          Full name is required
+        </span>
+        <span *ngIf="apiErrors['adminFullName']" class="text-xs text-red-500 block mt-1">
+          {{ apiErrors['adminFullName'] }}
+        </span>
+      </div>
+
+      <!-- 4. Admin Email -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Admin Email</label>
+        <input 
+          type="email" 
+          formControlName="adminEmail" 
+          placeholder="admin@company.com"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          [class.border-red-500]="(tenantForm.get('adminEmail')?.touched && tenantForm.get('adminEmail')?.invalid) || apiErrors['adminEmail']"
+        />
+        <ng-container *ngIf="tenantForm.get('adminEmail')?.touched && tenantForm.get('adminEmail')?.invalid">
+          <span *ngIf="tenantForm.get('adminEmail')?.errors?.['required']" class="text-xs text-red-500 block mt-1">
+            Admin email is required
+          </span>
+          <span *ngIf="tenantForm.get('adminEmail')?.errors?.['email']" class="text-xs text-red-500 block mt-1">
+            Please enter a valid email address
+          </span>
+        </ng-container>
+        <span *ngIf="apiErrors['adminEmail']" class="text-xs text-red-500 block mt-1">
+          {{ apiErrors['adminEmail'] }}
+        </span>
+      </div>
+
+      <!-- 5. Admin Password -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Admin Password</label>
+        <input 
+          type="password" 
+          formControlName="adminPassword" 
+          placeholder="Enter a strong password"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          [class.border-red-500]="(tenantForm.get('adminPassword')?.touched && tenantForm.get('adminPassword')?.invalid) || apiErrors['adminPassword']"
+        />
+        <ng-container *ngIf="tenantForm.get('adminPassword')?.touched && tenantForm.get('adminPassword')?.invalid">
+          <span *ngIf="tenantForm.get('adminPassword')?.errors?.['required']" class="text-xs text-red-500 block mt-1">
+            Password is required
+          </span>
+          <span *ngIf="tenantForm.get('adminPassword')?.errors?.['minlength']" class="text-xs text-red-500 block mt-1">
+            Password must be at least 6 characters long
+          </span>
+        </ng-container>
+        <span *ngIf="apiErrors['adminPassword']" class="text-xs text-red-500 block mt-1">
+          {{ apiErrors['adminPassword'] }}
+        </span>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+        <button 
+          type="button" 
+          (click)="close()" 
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          [disabled]="tenantForm.invalid"
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50">
+          Create Tenant
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

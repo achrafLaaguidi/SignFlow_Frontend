@@ -1,0 +1,148 @@
+<div class="p-6 md:p-10 space-y-8 bg-slate-50/50 min-h-screen font-['Plus_Jakarta_Sans',sans-serif]">
+  
+  <!-- Header Section -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
+    <div>
+      <div class="flex items-center gap-2.5">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">System Audit Logs</h1>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/50">
+          {{ totalElements }} Events
+        </span>
+      </div>
+      <p class="text-xs md:text-sm text-slate-500 mt-1">Track platform activities, admin interactions, and security logs in real-time.</p>
+    </div>
+
+    <button 
+      (click)="loadAuditLogs()" 
+      class="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-200 cursor-pointer shrink-0">
+      <i class="fas fa-sync-alt text-xs" [class.fa-spin]="isLoading"></i>
+      <span>Refresh Logs</span>
+    </button>
+  </div>
+
+  <!-- Search Section -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 md:p-5">
+    <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4">
+      
+      <!-- Search Input -->
+      <div class="flex-1 relative">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <i class="fas fa-search text-xs"></i>
+        </div>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (keyup.enter)="applyFilters()"
+          placeholder="Search by action, user, target, or details..." 
+          class="w-full pl-9 pr-4 py-2.5 bg-slate-50/70 focus:bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+        />
+      </div>
+
+      <!-- Filter Button -->
+      <button 
+        (click)="applyFilters()" 
+        class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+      >
+        <i class="fas fa-sliders-h text-xs"></i>
+        <span>Search</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Audit Logs Table Container -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+    
+    <div class="overflow-x-auto">
+      <table 
+        mat-table 
+        [dataSource]="dataSource" 
+        matSort 
+        [matSortActive]="sortActive"
+        [matSortDirection]="sortDirection"
+        (matSortChange)="onSortChange($event)"
+        class="w-full text-left border-collapse">
+        
+        <!-- Action Column -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="action" class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80">Action</th>
+          <td mat-cell *matCellDef="let log" class="px-6 py-4 border-b border-slate-100">
+            <span [class]="getActionClass(log.action) + ' inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border'">
+              <span class="w-1.5 h-1.5 rounded-full" [class]="getActionDotClass(log.action)"></span>
+              {{ log.action }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Performed By Column -->
+        <ng-container matColumnDef="performedBy">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="performedBy" class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80">User / Actor</th>
+          <td mat-cell *matCellDef="let log" class="px-6 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-2 text-slate-700">
+              <i class="far fa-user text-xs text-slate-400"></i>
+              <span class="text-sm font-semibold text-slate-800">{{ log.performedBy || 'System' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Target Resource Column -->
+        <ng-container matColumnDef="targetResource">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="targetResource" class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80">Target Resource</th>
+          <td mat-cell *matCellDef="let log" class="px-6 py-4 border-b border-slate-100">
+            <span class="text-xs font-mono bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md border border-slate-200/60">
+              {{ log.targetResource || 'N/A' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- IP Address Column -->
+        <ng-container matColumnDef="ipAddress">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="ipAddress" class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80">IP Address</th>
+          <td mat-cell *matCellDef="let log" class="px-6 py-4 border-b border-slate-100">
+            <span class="text-xs font-mono text-slate-500">{{ log.ipAddress || '127.0.0.1' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Timestamp Column -->
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="timestamp" class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80">Timestamp</th>
+          <td mat-cell *matCellDef="let log" class="px-6 py-4 border-b border-slate-100">
+            <span class="text-sm text-slate-500 font-medium">{{ log.timestamp | date:'medium' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Details Column -->
+        <ng-container matColumnDef="details">
+          <th mat-header-cell *matHeaderCellDef class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80">Details</th>
+          <td mat-cell *matCellDef="let log" class="px-6 py-4 border-b border-slate-100">
+            <p class="text-xs text-slate-500 truncate max-w-xs" [title]="log.details">{{ log.details || 'No additional details' }}</p>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-50/80 transition-colors"></tr>
+      </table>
+
+      <!-- Empty / Loading State -->
+      <div *ngIf="dataSource.data.length === 0 && !isLoading" class="p-8 text-center text-slate-500 text-sm">
+        No audit logs found.
+      </div>
+      <div *ngIf="isLoading" class="p-8 text-center text-slate-500 text-sm">
+        <i class="fas fa-spinner fa-spin mr-2"></i> Loading audit logs...
+      </div>
+    </div>
+
+    <!-- Material Paginator -->
+    <mat-paginator 
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[10, 20, 50]" 
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+      class="border-t border-slate-200/80 bg-white"
+    >
+    </mat-paginator>
+
+  </div>
+</div>

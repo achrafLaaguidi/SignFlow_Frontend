@@ -1,0 +1,48 @@
+<aside class="fixed left-0 top-0 h-screen w-64 bg-slate-950 text-slate-200 border-r border-slate-800 flex flex-col justify-between shadow-xl">
+  
+  <!-- Top Section (Logo & Title) -->
+  <div>
+    <div class="p-6 border-b border-slate-800/80 flex items-center space-x-3">
+      <div class="h-10 w-10 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+        <i class="fas fa-file-signature text-white text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight text-white">SignFlow</h1>
+        <p class="text-xs font-medium text-slate-400">
+          {{ (role === 'SUPER_ADMIN') ? 'Super Admin Portal' : 'Client Workspace' }}
+        </p>
+      </div>
+    </div>
+    
+    <!-- Navigation Links -->
+    <nav class="p-4">
+      <ul class="space-y-1.5">
+        @for (item of menuItems; track item.route) {
+          <li>
+            <a 
+              [routerLink]="item.route" 
+              routerLinkActive="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-blue-400 border-l-4 border-blue-500 font-medium shadow-sm"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="flex items-center px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-all duration-200 group"
+            >
+              <i [class]="item.icon" class="w-5 h-5 mr-3 transition-colors group-hover:text-blue-400"></i>
+              <span class="text-sm">{{ item.label }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Bottom Section (Logout Button & User Info) -->
+  <div class="p-4 border-t border-slate-800/80 bg-slate-950/50">
+    <button 
+      (click)="logout()" 
+      class="flex items-center w-full px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 group"
+    >
+      <i class="fas fa-sign-out-alt w-5 h-5 mr-3 transition-transform group-hover:-translate-x-0.5"></i>
+      <span class="text-sm font-medium">Sign Out</span>
+    </button>
+  </div>
+
+</aside>

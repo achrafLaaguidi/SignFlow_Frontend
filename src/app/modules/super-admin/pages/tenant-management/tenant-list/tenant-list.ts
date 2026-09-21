@@ -10,6 +10,10 @@ import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 
 import { TenantManagement } from '../../../services/tenant-management';
 import { CreateTenant, CreateTenantRequest } from '../create-tenant/create-tenant';
+import { TenantResponse } from '../../../../../core/models/tenant';
+
+// 🟢 قم بتعديل مسار الاستيراد بناءً على مكان المكون عندك
+import { Confirmation } from '../../../../../shared/components/confirmation/confirmation'; 
 
 @Component({
   selector: 'app-tenant-list',
@@ -18,6 +22,7 @@ import { CreateTenant, CreateTenantRequest } from '../create-tenant/create-tenan
     CommonModule,
     FormsModule,
     CreateTenant,
+    Confirmation,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule
@@ -26,7 +31,7 @@ import { CreateTenant, CreateTenantRequest } from '../create-tenant/create-tenan
 })
 export class TenantList implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['companyName', 'adminEmail', 'status', 'createdAt', 'actions'];
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource = new MatTableDataSource<TenantResponse>([]);
 
   // 📊 متغيرات Server-Side Pagination & Sorting
   totalElements = 0;
@@ -38,6 +43,10 @@ export class TenantList implements OnInit, AfterViewInit {
   searchQuery = '';
   statusFilter = '';
   showModal = false;
+
+  // 🚨 حالة Modal التأكيد للحذف
+  isConfirmModalOpen = false;
+  selectedTenantToDelete: TenantResponse | null = null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -77,7 +86,7 @@ export class TenantList implements OnInit, AfterViewInit {
       this.sortDirection
     ).subscribe({
       next: (response: any) => {
-        this.dataSource.data = response.content || [];
+        this.dataSource.data = response.content || ([] as TenantResponse[]);
         
         // 🟢 تحديث مجموع العناصر من PagedModel
         if (response.page) {
@@ -92,7 +101,7 @@ export class TenantList implements OnInit, AfterViewInit {
     });
   }
 
-  // 🔄 عند تغيير الصفحة أو عدد العناصر فـ Paginator
+  // 🔄 عند تغيير الصفحة أو عدد العناصر في الـ Paginator
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -130,9 +139,9 @@ export class TenantList implements OnInit, AfterViewInit {
     this.router.navigate([`/super-admin/tenants/${tenantId}`]);
   }
 
-  toggleStatus(tenant: any): void {
+  toggleStatus(tenant: TenantResponse): void {
     const newStatus = tenant.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-    this.tenantService.updateTenantStatus(tenant.tenantId, newStatus).subscribe({
+    this.tenantService.updateTenantStatus(tenant.id, { status: newStatus }).subscribe({
       next: () => {
         this.toastr.success(`Tenant status updated to ${newStatus}`, 'Success');
         this.loadTenants();
@@ -143,18 +152,33 @@ export class TenantList implements OnInit, AfterViewInit {
     });
   }
 
-  deleteTenant(tenant: any): void {
-    if (confirm(`Are you sure you want to delete ${tenant.companyName}?`)) {
-      this.tenantService.deleteTenant(tenant.tenantId).subscribe({
-        next: () => {
-          this.toastr.success('Tenant deleted successfully', 'Success');
-          this.loadTenants();
-        },
-        error: () => {
-          this.toastr.error('Failed to delete tenant.', 'Error');
-        }
-      });
-    }
+  // 🗑️ فتح نافذة التأكيد عند الضغط على زر الحذف
+  openDeleteModal(tenant: TenantResponse): void {
+    this.selectedTenantToDelete = tenant;
+    this.isConfirmModalOpen = true;
+  }
+
+  // ❌ إغلاق نافذة التأكيد
+  closeDeleteModal(): void {
+    this.isConfirmModalOpen = false;
+    this.selectedTenantToDelete = null;
+  }
+
+  confirmDeleteTenant(): void {
+    if (!this.selectedTenantToDelete) return;
+
+    const tenantId = this.selectedTenantToDelete.id;
+    this.tenantService.deleteTenant(tenantId).subscribe({
+      next: () => {
+        this.toastr.success('Tenant deleted successfully', 'Success');
+        this.closeDeleteModal();
+        this.loadTenants();
+      },
+      error: () => {
+        this.toastr.error('Failed to delete tenant.', 'Error');
+        this.closeDeleteModal();
+      }
+    });
   }
 
   getStatusClass(status: string): string {

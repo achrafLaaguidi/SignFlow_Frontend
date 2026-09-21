@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 export interface CreateTenantRequest {
@@ -13,7 +13,7 @@ export interface CreateTenantRequest {
 @Component({
   selector: 'app-create-tenant',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './create-tenant.html'
 })
 export class CreateTenant {

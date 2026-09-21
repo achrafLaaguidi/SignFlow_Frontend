@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ClientLayout } from './layouts/client-layout/client-layout';
 import { DocumentList } from './pages/document-list/document-list';
 import { DocumentSignature } from './pages/document-signature/document-signature';
+import { UserManagement } from './pages/user-management/user-management';
 
 const routes: Routes = [
   {
@@ -13,6 +14,7 @@ const routes: Routes = [
     children: [
       { path: 'documents', component: DocumentList },
       { path: 'documents/:id/sign', component: DocumentSignature },
+      { path: 'users', component: UserManagement },
       { path: '', redirectTo: 'documents', pathMatch: 'full' }
     ]
   }

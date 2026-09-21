@@ -46,8 +46,8 @@ export class TenantManagement {
     return this.http.post<any>(this.apiUrl, tenantData);
   }
 
-  updateTenantStatus(tenantId: string, status: string): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/${tenantId}/status`, { status });
+  updateTenantStatus(tenantId: string, statusRequest: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${tenantId}/status`, statusRequest);
   }
 
   deleteTenant(tenantId: string): Observable<any> {

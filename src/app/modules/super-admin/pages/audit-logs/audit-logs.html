@@ -1,5 +1,5 @@
 <div class="p-6 md:p-10 space-y-8 bg-slate-50/50 min-h-screen font-['Plus_Jakarta_Sans',sans-serif]">
-  
+
   <!-- Header Section -->
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
     <div>
@@ -12,8 +12,8 @@
       <p class="text-xs md:text-sm text-slate-500 mt-1">Track platform activities, admin interactions, and security logs in real-time.</p>
     </div>
 
-    <button 
-      (click)="loadAuditLogs()" 
+    <button
+      (click)="loadAuditLogs()"
       class="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-200 cursor-pointer shrink-0">
       <i class="fas fa-sync-alt text-xs" [class.fa-spin]="isLoading"></i>
       <span>Refresh Logs</span>
@@ -23,26 +23,26 @@
   <!-- Search Section -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 md:p-5">
     <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4">
-      
+
       <!-- Search Input -->
       <div class="flex-1 relative">
         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
           <i class="fas fa-search text-xs"></i>
         </div>
-        <input 
-          type="text" 
-          [(ngModel)]="searchQuery" 
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
           (keyup.enter)="applyFilters()"
-          placeholder="Search by action, user, target, or details..." 
+          placeholder="Search by action, user, target, or details..."
           class="w-full pl-9 pr-4 py-2.5 bg-slate-50/70 focus:bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-        />
+          />
       </div>
 
       <!-- Filter Button -->
-      <button 
-        (click)="applyFilters()" 
+      <button
+        (click)="applyFilters()"
         class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
-      >
+        >
         <i class="fas fa-sliders-h text-xs"></i>
         <span>Search</span>
       </button>
@@ -52,17 +52,17 @@
 
   <!-- Audit Logs Table Container -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-    
+
     <div class="overflow-x-auto">
-      <table 
-        mat-table 
-        [dataSource]="dataSource" 
-        matSort 
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
         [matSortActive]="sortActive"
         [matSortDirection]="sortDirection"
         (matSortChange)="onSortChange($event)"
         class="w-full text-left border-collapse">
-        
+
         <!-- Action Column -->
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef mat-sort-header="action" class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80">Action</th>
@@ -124,24 +124,28 @@
       </table>
 
       <!-- Empty / Loading State -->
-      <div *ngIf="dataSource.data.length === 0 && !isLoading" class="p-8 text-center text-slate-500 text-sm">
-        No audit logs found.
-      </div>
-      <div *ngIf="isLoading" class="p-8 text-center text-slate-500 text-sm">
-        <i class="fas fa-spinner fa-spin mr-2"></i> Loading audit logs...
-      </div>
+      @if (dataSource.data.length === 0 && !isLoading) {
+        <div class="p-8 text-center text-slate-500 text-sm">
+          No audit logs found.
+        </div>
+      }
+      @if (isLoading) {
+        <div class="p-8 text-center text-slate-500 text-sm">
+          <i class="fas fa-spinner fa-spin mr-2"></i> Loading audit logs...
+        </div>
+      }
     </div>
 
     <!-- Material Paginator -->
-    <mat-paginator 
+    <mat-paginator
       [length]="totalElements"
       [pageSize]="pageSize"
       [pageIndex]="pageIndex"
-      [pageSizeOptions]="[10, 20, 50]" 
+      [pageSizeOptions]="[10, 20, 50]"
       (page)="onPageChange($event)"
       showFirstLastButtons
       class="border-t border-slate-200/80 bg-white"
-    >
+      >
     </mat-paginator>
 
   </div>

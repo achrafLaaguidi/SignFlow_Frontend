@@ -1,14 +1,14 @@
 <div class="min-h-screen relative flex items-center justify-center p-6 bg-slate-50 overflow-hidden font-sans">
-  
+
   <!-- Light Glow Effects & Background Gradients -->
   <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-400/15 rounded-full blur-3xl pointer-events-none"></div>
   <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-400/15 rounded-full blur-3xl pointer-events-none"></div>
 
   <div class="relative w-full max-w-md">
-    
+
     <!-- Card Container (Light & Clean) -->
     <div class="bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-200/50 p-8 sm:p-10">
-      
+
       <!-- Logo and Header -->
       <div class="text-center mb-8">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/20 mb-4 transform hover:scale-105 transition-transform duration-300">
@@ -20,12 +20,14 @@
 
       <!-- Login Form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
-        
+
         <!-- Error Message -->
-        <div *ngIf="errorMessage" class="flex items-center space-x-3 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm" role="alert">
-          <i class="fas fa-circle-exclamation text-red-500 shrink-0"></i>
-          <span>{{ errorMessage }}</span>
-        </div>
+        @if (errorMessage) {
+          <div class="flex items-center space-x-3 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm" role="alert">
+            <i class="fas fa-circle-exclamation text-red-500 shrink-0"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
 
         <!-- Email Field -->
         <div class="space-y-1.5">
@@ -43,12 +45,18 @@
               [class.border-red-500]="email?.invalid && email?.touched"
               class="w-full pl-10 pr-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
               placeholder="name@company.com"
-            />
+              />
           </div>
-          <div *ngIf="email?.invalid && email?.touched" class="text-xs text-red-500 pl-1">
-            <span *ngIf="email?.errors?.['required']">Email is required</span>
-            <span *ngIf="email?.errors?.['email']">Please enter a valid email address</span>
-          </div>
+          @if (email?.invalid && email?.touched) {
+            <div class="text-xs text-red-500 pl-1">
+              @if (email?.errors?.['required']) {
+                <span>Email is required</span>
+              }
+              @if (email?.errors?.['email']) {
+                <span>Please enter a valid email address</span>
+              }
+            </div>
+          }
         </div>
 
         <!-- Password Field -->
@@ -72,18 +80,22 @@
               [class.border-red-500]="password?.invalid && password?.touched"
               class="w-full pl-10 pr-10 py-3 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
               placeholder="••••••••"
-            />
+              />
             <button
               type="button"
               (click)="togglePasswordVisibility()"
               class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
-            >
+              >
               <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
             </button>
           </div>
-          <div *ngIf="password?.invalid && password?.touched" class="text-xs text-red-500 pl-1">
-            <span *ngIf="password?.errors?.['required']">Password is required</span>
-          </div>
+          @if (password?.invalid && password?.touched) {
+            <div class="text-xs text-red-500 pl-1">
+              @if (password?.errors?.['required']) {
+                <span>Password is required</span>
+              }
+            </div>
+          }
         </div>
 
         <!-- Remember Me Checkbox -->
@@ -93,7 +105,7 @@
             type="checkbox"
             formControlName="rememberMe"
             class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-          />
+            />
           <label for="remember-me" class="ml-2.5 block text-sm text-slate-600">
             Remember me on this device
           </label>
@@ -104,15 +116,17 @@
           type="submit"
           [disabled]="isLoading || loginForm.invalid"
           class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-xl shadow-lg shadow-blue-600/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2"
-        >
-          <span *ngIf="!isLoading">Sign In</span>
-          <span *ngIf="isLoading" class="flex items-center space-x-2">
-            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Signing in...</span>
-          </span>
+          >
+          @if(!isLoading){<span>Sign In</span>}
+          @if(isLoading){
+            <span  class="flex items-center space-x-2">
+              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Signing in...</span>
+            </span>
+          }
         </button>
 
       </form>

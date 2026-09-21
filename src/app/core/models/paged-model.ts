@@ -8,5 +8,5 @@ export interface PageMetadata {
 
 export interface PagedModel<T> {
   content: T[];
-  page?: PageMetadata; // ولا pageable حسب النسخة
+  page?: PageMetadata; 
 }

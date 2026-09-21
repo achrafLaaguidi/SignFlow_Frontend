@@ -1,7 +1,5 @@
-<!-- Google Font Import (إلا ما كنتيش دايرو فـ index.html) -->
-
 <div class="p-6 md:p-10 space-y-8 bg-slate-50/50 min-h-screen font-['Plus_Jakarta_Sans',sans-serif]">
-  
+
   <!-- Header Section -->
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
     <div>
@@ -13,9 +11,9 @@
       </div>
       <p class="text-xs md:text-sm text-slate-500 mt-1">Monitor organizations, manage tenant schemas, and control system access.</p>
     </div>
-    
-    <button 
-      (click)="showModal = true" 
+
+    <button
+      (click)="showModal = true"
       class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer shrink-0">
       <i class="fas fa-plus text-xs"></i>
       <span>Create Tenant</span>
@@ -25,28 +23,28 @@
   <!-- Search and Filters Section -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 md:p-5">
     <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4">
-      
+
       <!-- Search Input -->
       <div class="flex-1 relative">
         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
           <i class="fas fa-search text-xs"></i>
         </div>
-        <input 
-          type="text" 
-          [(ngModel)]="searchQuery" 
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
           (keyup.enter)="applyFilters()"
-          placeholder="Search by company name or ID..." 
+          placeholder="Search by company name or ID..."
           class="w-full pl-9 pr-4 py-2.5 bg-slate-50/70 focus:bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-        />
+          />
       </div>
 
       <!-- Status Filter -->
       <div class="w-full md:w-48">
-        <select 
-          [(ngModel)]="statusFilter" 
+        <select
+          [(ngModel)]="statusFilter"
           (change)="applyFilters()"
           class="w-full px-3.5 py-2.5 bg-slate-50/70 focus:bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
-        >
+          >
           <option value="">All Statuses</option>
           <option value="ACTIVE">Active</option>
           <option value="SUSPENDED">Suspended</option>
@@ -55,10 +53,10 @@
       </div>
 
       <!-- Filter Action Button -->
-      <button 
-        (click)="applyFilters()" 
+      <button
+        (click)="applyFilters()"
         class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
-      >
+        >
         <i class="fas fa-sliders-h text-xs"></i>
         <span>Filter</span>
       </button>
@@ -68,15 +66,15 @@
 
   <!-- Tenants Table Container -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-    
+
     <div class="overflow-x-auto">
-      <table 
-        mat-table 
-        [dataSource]="dataSource" 
-        matSort 
-        [matSortActive]="sortActive" 
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+        [matSortActive]="sortActive"
         class="w-full text-left border-collapse">
-        
+
         <!-- Company Column -->
         <ng-container matColumnDef="companyName">
           <th mat-header-cell *matHeaderCellDef mat-sort-header="companyName" class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80">Organization</th>
@@ -128,25 +126,25 @@
           <th mat-header-cell *matHeaderCellDef class="px-6 py-4 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/80 text-right">Actions</th>
           <td mat-cell *matCellDef="let tenant" class="px-6 py-4 border-b border-slate-100 text-right">
             <div class="flex items-center justify-end gap-1.5">
-              <button 
-                (click)="viewTenant(tenant.tenantId)" 
-                class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50/80 rounded-lg transition-colors cursor-pointer" 
+              <button
+                (click)="viewTenant(tenant.id)"
+                class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50/80 rounded-lg transition-colors cursor-pointer"
                 title="View Details"
-              >
+                >
                 <i class="fas fa-eye text-xs"></i>
               </button>
-              <button 
-                (click)="toggleStatus(tenant)" 
-                class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50/80 rounded-lg transition-colors cursor-pointer" 
+              <button
+                (click)="toggleStatus(tenant)"
+                class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50/80 rounded-lg transition-colors cursor-pointer"
                 title="Toggle Status"
-              >
+                >
                 <i class="fas fa-power-off text-xs"></i>
               </button>
-              <button 
-                (click)="deleteTenant(tenant)" 
-                class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50/80 rounded-lg transition-colors cursor-pointer" 
+              <button
+                (click)="openDeleteModal(tenant)"
+                class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50/80 rounded-lg transition-colors cursor-pointer"
                 title="Delete Tenant"
-              >
+                >
                 <i class="fas fa-trash-alt text-xs"></i>
               </button>
             </div>
@@ -158,25 +156,37 @@
       </table>
     </div>
 
-    <!-- Material Paginator (Server-Side Bound) -->
-    <mat-paginator 
+    <!-- Material Paginator -->
+    <mat-paginator
       [length]="totalElements"
       [pageSize]="pageSize"
       [pageIndex]="pageIndex"
-      [pageSizeOptions]="[10, 25, 50]" 
+      [pageSizeOptions]="[10, 25, 50]"
       (page)="onPageChange($event)"
       showFirstLastButtons
       class="border-t border-slate-200/80 bg-white"
-    >
+      >
     </mat-paginator>
 
   </div>
 
-  <app-create-tenant 
-    *ngIf="showModal" 
-    (closeEvent)="showModal = false"
-    [apiErrors]="apiErrors"
-    [errorMessage]="errorMessage"
-    (saveEvent)="handleCreateTenant($event)">
-  </app-create-tenant>
+  @if (showModal) {
+    <app-create-tenant
+      (closeEvent)="showModal = false"
+      [apiErrors]="apiErrors"
+      [errorMessage]="errorMessage"
+      (saveEvent)="handleCreateTenant($event)">
+    </app-create-tenant>
+  }
+
+  <!-- Confirmation Modal Component -->
+  <app-confirmation
+    [isOpen]="isConfirmModalOpen"
+    title="Delete Tenant"
+    message="Are you sure you want to delete this tenant? This action is permanent and cannot be undone."
+    confirmText="Delete Tenant"
+    (confirm)="confirmDeleteTenant()"
+    (cancel)="closeDeleteModal()">
+  </app-confirmation>
+
 </div>

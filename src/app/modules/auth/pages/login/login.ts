@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -9,10 +9,9 @@ import { Auth, AuthRequest } from '../../../../core/services/auth';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     RouterLink
-  ],
+],
   templateUrl: './login.html'
 })
 export class Login implements OnInit {
@@ -47,7 +46,9 @@ export class Login implements OnInit {
       next: (user) => {
         this.isCheckingSession = false;
         if (user) {
-          this.redirectBasedOnRole(user.role);
+          // استخراج اسم الـ Role حتى لو جا كـ Object
+          const roleName = typeof user.role === 'object' ? user.role?.name : user.role;
+          this.redirectBasedOnRole(roleName);
         }
       },
       error: () => {
@@ -79,12 +80,14 @@ export class Login implements OnInit {
       next: (user) => {
         this.isLoading = false;
         this.toastr.success('Welcome back!', 'Login Successful');
-        this.authService.setUserSession(user);
-        this.redirectBasedOnRole(user.role);
+        
+        // استخراج اسم الـ Role دقيق
+        const roleName = typeof user.role === 'object' ? user.role?.name : user.role;
+        this.redirectBasedOnRole(roleName);
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Login failed';
+        this.errorMessage = error.error?.message || 'Login failed. Please check your credentials.';
         this.toastr.error(this.errorMessage);
       }
     });
@@ -103,6 +106,7 @@ export class Login implements OnInit {
     if (userRole === 'SUPER_ADMIN') {
       this.router.navigate(['/super-admin/dashboard']);
     } else {
+      // موجه لجميع أدوار الـ Client (CLIENT_ADMIN, CLIENT_USER...)
       this.router.navigate(['/client/documents']);
     }
   }

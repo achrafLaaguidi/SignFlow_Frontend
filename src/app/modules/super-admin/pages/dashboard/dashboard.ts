@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { SuperAdmin } from '../../services/super-admin';
 import { ToastrService } from 'ngx-toastr';
 import { Chart, registerables } from 'chart.js';
@@ -9,7 +9,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './dashboard.html'
 })
 export class Dashboard implements OnInit, AfterViewInit, OnDestroy {

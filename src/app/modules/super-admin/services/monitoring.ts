@@ -33,7 +33,7 @@ export interface PageableParams {
 })
 export class Monitoring {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}central/monitoring`;
+  private apiUrl = `${environment.apiUrl}/central/monitoring`;
 
   /**
    * جلب الإحصائيات العامة للمنصة (Platform Metrics)

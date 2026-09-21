@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth-guard'; 
 import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
@@ -17,7 +16,7 @@ export const routes: Routes = [
     path: 'client', 
     loadChildren: () => import('./modules/client/client-module').then(m => m.ClientModule),
     canActivate: [roleGuard],
-    data: { roles: ['TENANT_ADMIN', 'USER'] }
+    data: { roles: ['CLIENT_ADMIN', 'CLIENT_USER'] } 
   },
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/auth/login' }

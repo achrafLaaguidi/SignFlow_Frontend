@@ -1,1 +1,13 @@
-<p>client-layout works!</p>
+<div class="min-h-screen bg-slate-50 text-slate-900 flex font-sans">
+  
+  <!-- Sidebar ديماً ثابت فـ الجنب -->
+  <app-sidebar ></app-sidebar>
+
+  <!-- المحتوى الرئيسي (Dashboard, Tenants, Logs...) كيتغير هنا -->
+  <main class="flex-1 pl-64 min-h-screen transition-all duration-300 bg-slate-50">
+    <div class="p-8">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+</div>
